@@ -7,11 +7,14 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerHandler : MonoBehaviour
 {
+    [Header("Set-up")]
     [SerializeField] private Transform CameraTransform;
+    [Header("Settings")]
     [SerializeField] private float UPLookBounds = 45;
     [SerializeField] private float DOWNLookBounds = 55;
     [SerializeField] private float MoveSpeed = 5f;
     [SerializeField] private float MouseSensitivity = 5f;
+    [SerializeField] private float UpDownSensitivityMultiplier = 0.7f;
     [SerializeField] private float JumpForce = 50f;
     private PlayerInputActions inputActions;
     private Rigidbody rb;
@@ -46,17 +49,16 @@ public class PlayerHandler : MonoBehaviour
         if (look != null && cameraLocked){
             transform.Rotate(new Vector3(0,look.x*MouseSensitivity,0));
             CameraTransform.localRotation = Quaternion.Euler(CameraTransform.rotation.eulerAngles.x,0,0);
-            CameraTransform.Rotate(look.y*MouseSensitivity*-1,0,0);
-            float newXAngle = CameraTransform.rotation.eulerAngles.x + look.y*MouseSensitivity*-1;
+            float newXAngle = CameraTransform.rotation.eulerAngles.x + look.y*MouseSensitivity*UpDownSensitivityMultiplier*-1;
             if (newXAngle < 360-UPLookBounds && newXAngle > 180)
-            {
+            { // пришлось умножить на -1, т.к. почему-то вниз наместо вверх.
                 CameraTransform.rotation = Quaternion.Euler(360-UPLookBounds,CameraTransform.rotation.eulerAngles.y,0);
             } else if (newXAngle > DOWNLookBounds && newXAngle < 360-UPLookBounds)
             {
                 CameraTransform.rotation = Quaternion.Euler(DOWNLookBounds,CameraTransform.rotation.eulerAngles.y,0);
             } else 
             {
-                CameraTransform.Rotate(look.y*MouseSensitivity*-1,0,0);
+                CameraTransform.Rotate(look.y*UpDownSensitivityMultiplier*MouseSensitivity*-1,0,0);
             }
         }
     }
